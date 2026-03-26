@@ -26,8 +26,25 @@ function App() {
 
   // --- UPLOAD LOGIC ---
   const handleFileChange = (event) => {
+    // 1. Check if the user actually selected a file
     if (event.target.files && event.target.files.length > 0) {
-      setFile(event.target.files[0]);
+      const selectedFile = event.target.files[0];
+      
+      // 2. Define the 50MB limit in bytes (50 * 1024 * 1024)
+      const maxSizeInBytes = 52428800; 
+
+      // 3. The Bouncer: If the file is too heavy, block it!
+      if (selectedFile.size > maxSizeInBytes) {
+        setErrorMessage('File exceeds the 50MB limit. Please select a smaller file.');
+        setStatus('error');
+        setFile(null); // Clear out any previously selected file
+        event.target.value = ''; // Reset the actual HTML input
+        return; // Stop the function here so it doesn't save
+      }
+
+      // 4. If the file is under 50MB, welcome it to the vault
+      setFile(selectedFile);
+      setErrorMessage(''); // Clear any old error messages
       setStatus('idle'); 
     }
   };
@@ -124,18 +141,18 @@ function App() {
           <p className="text-sm text-zinc-400">Connection authenticated. Limit: 50MB per file.</p>
         </div>
 
-        <div className="relative border-2 border-dashed border-zinc-700 rounded-lg p-10 flex flex-col items-center justify-center text-zinc-500 hover:border-zinc-500 hover:text-zinc-300 transition-colors bg-zinc-950/50 group">
+        <label className="relative border-2 border-dashed border-zinc-700 rounded-lg p-10 flex flex-col items-center justify-center text-zinc-500 hover:border-zinc-500 hover:text-zinc-300 transition-colors bg-zinc-950/50 group">
           <input 
             type="file" 
             onChange={handleFileChange}
-            accept="video/*, audio/*, image/*"
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+            accept="video/*,audio/*,image/*"
+            className="hidden"
           />
           <svg className="w-10 h-10 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
           <span className="text-sm font-medium text-center px-4">
-            {file ? file.name : "Tap to select file"}
+            {file ? file.name : "Tap to select media file (image, audio, or video) under 50MB"}
           </span>
-        </div>
+        </label>
 
         <button 
           onClick={uploadFile}
