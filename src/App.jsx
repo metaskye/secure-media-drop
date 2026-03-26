@@ -59,6 +59,16 @@ function App() {
     setStatus('uploading');
     setErrorMessage('');
 
+    // --- NEW SANITIZATION LOGIC ---
+    // 1. Strip out spaces, brackets, and special characters. Keep only letters, numbers, dots, and hyphens.
+    const safeFileName = file.name
+      .replace(/\s+/g, '-') // Replaces all spaces with hyphens
+      .replace(/[^a-zA-Z0-9.\-]/g, '') // Deletes any character that IS NOT a letter, number, dot, or hyphen
+      .toLowerCase(); // Makes it all lowercase for extra safety
+
+    // 2. Create the final, database-safe key
+    const filePath = `${Date.now()}-${safeFileName}`;
+
     try {
       const uniqueFileName = `${Date.now()}-${file.name}`;
 
