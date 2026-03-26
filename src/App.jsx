@@ -63,14 +63,14 @@ function App() {
     // 1. Extract ONLY the extension (e.g., 'mp3', 'mp4', 'jpg')
     const fileExt = file.name.split('.').pop().toLowerCase();
     
-    // 2. Generate a flawless, random string (Timestamp + Random Math)
+    // 2. Generate a random 7-character string (Timestamp + Random Math)
     // Example output: 1711464001234-a1b2c3d.mp3
     const randomString = Math.random().toString(36).substring(2, 9);
-    const safeFilePath = `${Date.now()}-${randomString}.${fileExt}`;
+
+    // 3. Create the bulletproof name
+    const uniqueFileName = `${Date.now()}-${randomString}.${fileExt}`;
 
     try {
-      const uniqueFileName = `${Date.now()}-${file.name}`;
-
       let targetBucket = '';
       if (file.type.startsWith('image/')) {
         targetBucket = 'photo-drop';
