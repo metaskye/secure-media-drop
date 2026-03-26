@@ -44,8 +44,23 @@ function App() {
 
     try {
       const uniqueFileName = `${Date.now()}-${file.name}`;
+
+      let targetBucket = '';
+      if (file.type.startsWith('image/')) {
+        targetBucket = 'photo-drop';
+      } else if (file.type.startsWith('audio/')) {
+        targetBucket = 'audio-drop';
+      } else if (file.type.startsWith('video/')) {
+        targetBucket = 'video-drop';
+      } else {
+        // If they somehow select a PDF or Word Doc, stop the upload
+        setErrorMessage('Unsupported file type. Please select an image, audio, or video.');
+        setStatus('error');
+        return; 
+      }
+
       const { data, error } = await supabase.storage
-        .from('video-drop')
+        .from(targetBucket)
         .upload(uniqueFileName, file, {
           cacheControl: '3600',
           upsert: false
